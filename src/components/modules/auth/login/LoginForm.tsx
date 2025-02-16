@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client"
 import Logo from "@/app/assets/svgs/Logo";
 import { Button } from "@/components/ui/button";
@@ -6,27 +7,27 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { registerValidationSchema } from "./registerValidation";
-import { registerUser } from "@/services/authService";
+import { loginUser } from "@/services/authService";
 import { toast } from "sonner";
+import { loginValidationSchema } from "./loginValidation";
 
-const RegisterForm = () => {
+const LoginForm = () => {
     const form = useForm({
-        resolver: zodResolver(registerValidationSchema)
+        resolver: zodResolver(loginValidationSchema)
     });
 
     const {formState: {isSubmitting}} = form;
+    const email = form.watch('email');
     const password = form.watch('password');
-    const confirmPassword = form.watch('confirmPassword');
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         try {
-            const res = await registerUser(data);
+            const res = await loginUser(data);
             if (res?.success) {
                 toast.success(res?.message);
             } else {
                 toast.error(res?.message);
-            }            
+            } 
         } catch(error) {
             console.error(error);
         }
@@ -36,27 +37,14 @@ const RegisterForm = () => {
             <div className="flex items-center space-x-4 ">
                 <Logo />
                 <div>
-                    <h1 className="text-xl font-semibold">Register</h1>
+                    <h1 className="text-xl font-semibold">Login</h1>
                     <p className="font-extralight text-sm text-gray-600">
-                        Join us today and start your journey!
+                        Login in your account and enjoy services
                     </p>
                 </div>
             </div>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Name</FormLabel>
-                                <FormControl>
-                                    <Input type="text" {...field} value={field.value || ""} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />   
+                <form onSubmit={form.handleSubmit(onSubmit)}>                       
                     <FormField
                         control={form.control}
                         name="email"
@@ -82,35 +70,20 @@ const RegisterForm = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />   
-                    <FormField
-                        control={form.control}
-                        name="confirmPassword"
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Confirm Password</FormLabel>
-                                <FormControl>
-                                    <Input type="password" {...field} value={field.value || ""} />
-                                </FormControl>
-                                {
-                                    confirmPassword && password !== confirmPassword ? (<FormMessage>Password does not match</FormMessage>) : (<FormMessage />)
-                                }                                
-                            </FormItem>
-                        )}
-                    />   
-                    <Button disabled={confirmPassword && password !== confirmPassword} className="mt-5 w-full" type="submit">
-                        {isSubmitting ? "Registering..." : "Register"}    
+                    />  
+                    <Button disabled={!email && !password} className="mt-5 w-full" type="submit">
+                        {isSubmitting ? "Loging..." : "Login"}    
                     </Button>                 
                 </form>
             </Form>
             <p className="text-sm text-gray-600 text-center my-3">
-                Already have an account ?
-                <Link href="/login" className="text-primary">
-                    Login
+                Don't have an account
+                <Link href="/register" className="text-primary">
+                    Register
                 </Link>
             </p>
         </div>
     );
 };
 
-export default RegisterForm;
+export default LoginForm;
