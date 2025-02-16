@@ -77,10 +77,7 @@ const LoginForm = () => {
                 </form>
             </Form>
             <p className="text-sm text-gray-600 text-center my-3">
-                Don't have an account
-                <Link href="/register" className="text-primary">
-                    Register
-                </Link>
+                Don't have an account <Link href="/register" className="text-primary">Register</Link>
             </p>
         </div>
     );

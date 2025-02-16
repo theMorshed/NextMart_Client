@@ -104,10 +104,7 @@ const RegisterForm = () => {
                 </form>
             </Form>
             <p className="text-sm text-gray-600 text-center my-3">
-                Already have an account ?
-                <Link href="/login" className="text-primary">
-                    Login
-                </Link>
+                Already have an account? <Link href="/login" className="text-primary">Login</Link>
             </p>
         </div>
     );
