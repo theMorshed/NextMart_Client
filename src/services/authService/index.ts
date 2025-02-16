@@ -76,3 +76,6 @@ export const reCaptchaTokenVerification = async(token: string) => {
     }
 }
 
+export const logOut = async() => {
+    (await cookies()).delete('accessToken');
+}
