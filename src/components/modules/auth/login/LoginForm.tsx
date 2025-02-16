@@ -1,5 +1,6 @@
 /* eslint-disable react/no-unescaped-entities */
 "use client"
+import ReCAPTCHA from "react-google-recaptcha";
 import Logo from "@/app/assets/svgs/Logo";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -7,18 +8,30 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
-import { loginUser } from "@/services/authService";
+import { loginUser, reCaptchaTokenVerification } from "@/services/authService";
 import { toast } from "sonner";
 import { loginValidationSchema } from "./loginValidation";
+import { useState } from "react";
 
 const LoginForm = () => {
     const form = useForm({
         resolver: zodResolver(loginValidationSchema)
     });
 
+    const [reCaptchaStatus, setReCaptchaStatus] = useState(false);
+
+    const handleRecaptcha = async (token: string | null) => {
+        try {
+            const res = await reCaptchaTokenVerification(token!);
+            if (res?.success) {
+                setReCaptchaStatus(true);
+            }
+        }catch(error) {
+            console.error(error);
+        }
+    }
+
     const {formState: {isSubmitting}} = form;
-    const email = form.watch('email');
-    const password = form.watch('password');
 
     const onSubmit: SubmitHandler<FieldValues> = async (data) => {
         try {
@@ -71,7 +84,13 @@ const LoginForm = () => {
                             </FormItem>
                         )}
                     />  
-                    <Button disabled={!email && !password} className="mt-5 w-full" type="submit">
+                    <div className="ml-12 mt-5 mx-auto">
+                        <ReCAPTCHA
+                            sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY!}
+                            onChange={handleRecaptcha}
+                        />
+                    </div>
+                    <Button disabled={!reCaptchaStatus} className="mt-5 w-full" type="submit">
                         {isSubmitting ? "Loging..." : "Login"}    
                     </Button>                 
                 </form>
