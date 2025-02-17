@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import Logo from "@/app/assets/svgs/Logo";
 import { Button } from "@/components/ui/button";
 import NMImageUploader from "@/components/ui/core/NMImageUploader";
+import ImagePreviewer from "@/components/ui/core/NMImageUploader/ImagePreviewer";
 import {
   Form,
   FormControl,
@@ -18,6 +20,8 @@ import { FieldValues, useForm } from "react-hook-form";
 
 export default function CreateShopForm() {
     const [imageFiles, setImageFiles] = useState<File[] | []>([]);
+    const [imagePreview, setImagePreview] = useState<string[] | []>([]);
+
     const form = useForm();
     const {formState: {isSubmitting}} = form;
 
@@ -194,7 +198,13 @@ export default function CreateShopForm() {
                             )}
                         />
                     </div>
-                    <NMImageUploader imageFiles={imageFiles} setImageFiles={setImageFiles} />
+                    {imagePreview?.length > 0 ? (
+                        <ImagePreviewer imagePreview={imagePreview} setImageFiles={setImageFiles} setImagePreview={setImagePreview} className="mt-8" />
+                    ): (
+                        <div className="mt-8">
+                            <NMImageUploader setImageFiles={setImageFiles} setImagePreview={setImagePreview} label="Upload Logo" />
+                        </div>
+                    )}
                 </div>
 
                 <Button type="submit" className="mt-5 w-full">
