@@ -12,6 +12,7 @@ import { loginUser, reCaptchaTokenVerification } from "@/services/authService";
 import { toast } from "sonner";
 import { loginValidationSchema } from "./loginValidation";
 import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LoginForm = () => {
     const form = useForm({
@@ -19,6 +20,10 @@ const LoginForm = () => {
     });
 
     const [reCaptchaStatus, setReCaptchaStatus] = useState(false);
+
+    const searchParams = useSearchParams();
+    const redirect = searchParams.get('redirectPath');
+    const router = useRouter();
 
     const handleRecaptcha = async (token: string | null) => {
         try {
@@ -38,6 +43,11 @@ const LoginForm = () => {
             const res = await loginUser(data);
             if (res?.success) {
                 toast.success(res?.message);
+                if (redirect) {
+                    router.push(redirect);
+                } else {
+                    router.push('/profile');
+                }
             } else {
                 toast.error(res?.message);
             } 
