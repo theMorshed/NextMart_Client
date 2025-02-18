@@ -15,8 +15,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { createShop } from "@/services/shop";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 export default function CreateShopForm() {
     const [imageFiles, setImageFiles] = useState<File[] | []>([]);
@@ -25,8 +27,32 @@ export default function CreateShopForm() {
     const form = useForm();
     const {formState: {isSubmitting}} = form;
 
-    const onSubmit = (data: FieldValues) => {
-        console.log(data);
+    const onSubmit = async (data: FieldValues) => {
+        const servicesOffered = data?.servicesOffered
+            .split(',')
+            .map((service: string) => service.trim())
+            .filter((service: string) => service !== "");
+
+        const modifiedData = {
+            ...data,
+            servicesOffered: servicesOffered,
+            establishedYear: Number(data?.establishedYear)
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append("data", JSON.stringify(modifiedData));
+            formData.append("logo", imageFiles[0] as File);
+
+            const res = await createShop(formData);
+            if (res?.success) {
+                toast.success(res?.message);
+            }
+            console.log(res);
+
+        }catch(error) {
+            console.error(error);
+        }
     }
 
     return (
