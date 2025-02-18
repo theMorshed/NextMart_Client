@@ -14,13 +14,22 @@ import {
 import { logOut } from "@/services/authService";
 import { useUser } from "@/context/UserContext";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { protectedRoutes } from "@/constants";
 
 
 export default function Navbar() {
     const {user, setIsLoading} = useUser();
+
+    const pathname = usePathname();
+    const router = useRouter();
+
     const handleLogout = () => {
         logOut();
         setIsLoading(true);
+        if (protectedRoutes.some(route => pathname.match(route))) {
+            router.push('/');
+        }
     }
 
     return (
